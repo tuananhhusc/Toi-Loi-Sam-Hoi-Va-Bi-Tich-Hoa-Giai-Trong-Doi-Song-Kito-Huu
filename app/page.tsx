@@ -1,65 +1,69 @@
-import Image from "next/image";
+import fs from "fs";
+import path from "path";
+import Report from "@/content/report.mdx";
+import { HeaderHideOnScroll } from "@/components/reader/header-hide-on-scroll";
+import { ReaderFooter } from "@/components/reader/reader-footer";
+import { ReadingProgress } from "@/components/reader/reading-progress";
+import { ReferencesSection } from "@/components/reader/references-section";
+import { StickyToc } from "@/components/reader/sticky-toc";
+import { BackToTop } from "@/components/reader/back-to-top";
+import { ShareButton } from "@/components/reader/share-button";
+import { useMDXComponents } from "@/mdx-components";
+import { getTableOfContents } from "@/lib/toc";
+
+function getReadingTime(filePath: string): number {
+  try {
+    const fullPath = path.join(process.cwd(), filePath);
+    const content = fs.readFileSync(fullPath, "utf-8");
+    const words = content.trim().split(/\s+/).length;
+    return Math.ceil(words / 220); // Average reading speed for academic texts
+  } catch (e) {
+    return 15;
+  }
+}
 
 export default function Home() {
+  const toc = getTableOfContents("content/report.mdx");
+  const readingTime = getReadingTime("content/report.mdx");
+  const mdxComponents = useMDXComponents({});
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+      <ReadingProgress />
+      <HeaderHideOnScroll />
+
+      <main className="relative mx-auto w-full max-w-[1440px] px-2 pt-32 pb-24 sm:px-6 lg:px-12 w-full overflow-hidden sm:overflow-visible">
+        <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[500px] bg-[radial-gradient(circle_at_top_left,rgba(194,155,64,0.12),transparent_55%),radial-gradient(circle_at_top_right,rgba(107,33,168,0.11),transparent_50%)]" />
+
+        <div className="grid items-start gap-8 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-12 xl:grid-cols-[280px_minmax(0,1fr)] xl:gap-16">
+          <StickyToc items={toc} />
+
+          <section className="min-w-0 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--card)]/95 px-3 py-8 shadow-[0_32px_80px_-20px_rgba(28,25,23,0.08)] sm:px-12 sm:py-16 lg:px-20">
+            <div className="mb-4 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-center">
+              <span className="hidden sm:block h-[1px] w-8 bg-[color:var(--primary)]/40" />
+              <span className="text-[0.6rem] sm:text-[0.65rem] font-bold tracking-[0.15em] sm:tracking-[0.2em] uppercase text-[color:var(--primary)]">Tài liệu nghiên cứu chuyên sâu</span>
+              <span className="hidden sm:block h-[1px] w-8 bg-[color:var(--primary)]/40" />
+            </div>
+
+            <div className="mb-10 flex flex-wrap items-center justify-center gap-3">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--muted)]/40 px-4 py-1.5 text-[0.75rem] text-[color:var(--muted-foreground)]">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[color:var(--primary)]"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>Thời gian đọc ước tính: <strong className="text-[color:var(--foreground)]">{readingTime} phút</strong></span>
+              </div>
+              <ShareButton />
+            </div>
+
+            <article className="reader-prose">
+              <Report components={mdxComponents} />
+            </article>
+
+            <ReferencesSection />
+          </section>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+
+        <BackToTop />
+        <ReaderFooter />
       </main>
-    </div>
+    </>
   );
 }
