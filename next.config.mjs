@@ -1,4 +1,7 @@
 import createMDX from "@next/mdx";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeSlug from "rehype-slug";
+import remarkGfm from "remark-gfm";
 
 const isProd = process.env.NODE_ENV === "production";
 const repoName = "/Toi-Loi-Sam-Hoi-Va-Bi-Tich-Hoa-Giai-Trong-Doi-Song-Kito-Huu";
@@ -11,24 +14,15 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  turbopack: {
-    rules: {
-      "*.mdx": {
-        loaders: ["@mdx-js/loader"],
-        as: "*.js",
-      },
-    },
-    resolveExtensions: [".mdx", ".tsx", ".ts", ".jsx", ".js", ".mjs", ".json"],
-  },
 };
 
 const withMDX = createMDX({
   options: {
-    remarkPlugins: ["remark-gfm"],
+    remarkPlugins: [remarkGfm],
     rehypePlugins: [
-      "rehype-slug",
+      rehypeSlug,
       [
-        "rehype-autolink-headings",
+        rehypeAutolinkHeadings,
         {
           behavior: "append",
           properties: {
