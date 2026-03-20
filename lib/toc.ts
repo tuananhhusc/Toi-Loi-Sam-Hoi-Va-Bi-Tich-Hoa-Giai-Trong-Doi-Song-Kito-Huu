@@ -1,4 +1,4 @@
-﻿import fs from "node:fs";
+import fs from "node:fs";
 import path from "node:path";
 
 import type { TocItem } from "@/lib/reader-types";
@@ -16,7 +16,7 @@ export function slugify(input: string): string {
 }
 
 export function getTableOfContents(relativePath: string): TocItem[] {
-  const absolutePath = path.join(process.cwd(), relativePath);
+  const absolutePath = path.join(process.cwd() /* turbopackIgnore: true */, relativePath);
   const source = fs.readFileSync(absolutePath, "utf8");
 
   return source

@@ -1,15 +1,34 @@
 import createMDX from "@next/mdx";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import rehypeSlug from "rehype-slug";
-import remarkGfm from "remark-gfm";
+
+const isProd = process.env.NODE_ENV === "production";
+const repoName = "/Toi-Loi-Sam-Hoi-Va-Bi-Tich-Hoa-Giai-Trong-Doi-Song-Kito-Huu";
+
+const nextConfig = {
+  pageExtensions: ["ts", "tsx", "md", "mdx"],
+  output: isProd ? "export" : undefined,
+  basePath: isProd ? repoName : "",
+  assetPrefix: isProd ? repoName : "",
+  images: {
+    unoptimized: true,
+  },
+  turbopack: {
+    rules: {
+      "*.mdx": {
+        loaders: ["@mdx-js/loader"],
+        as: "*.js",
+      },
+    },
+    resolveExtensions: [".mdx", ".tsx", ".ts", ".jsx", ".js", ".mjs", ".json"],
+  },
+};
 
 const withMDX = createMDX({
   options: {
-    remarkPlugins: [remarkGfm],
+    remarkPlugins: ["remark-gfm"],
     rehypePlugins: [
-      rehypeSlug,
+      "rehype-slug",
       [
-        rehypeAutolinkHeadings,
+        "rehype-autolink-headings",
         {
           behavior: "append",
           properties: {
@@ -25,18 +44,5 @@ const withMDX = createMDX({
     ],
   },
 });
-
-const isProd = process.env.NODE_ENV === "production";
-const repoName = "/Toi-Loi-Sam-Hoi-Va-Bi-Tich-Hoa-Giai-Trong-Doi-Song-Kito-Huu";
-
-const nextConfig = {
-  pageExtensions: ["ts", "tsx", "md", "mdx"],
-  output: isProd ? "export" : undefined,
-  basePath: isProd ? repoName : "",
-  assetPrefix: isProd ? repoName : "",
-  images: {
-    unoptimized: true,
-  },
-};
 
 export default withMDX(nextConfig);

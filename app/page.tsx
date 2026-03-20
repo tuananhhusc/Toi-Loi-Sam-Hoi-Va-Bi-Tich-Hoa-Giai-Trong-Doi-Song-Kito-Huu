@@ -11,9 +11,10 @@ import { ShareButton } from "@/components/reader/share-button";
 import { useMDXComponents } from "@/mdx-components";
 import { getTableOfContents } from "@/lib/toc";
 
-function getReadingTime(filePath: string): number {
+function getReadingTime(): number {
   try {
-    const fullPath = path.join(process.cwd(), filePath);
+    const filePath = "content/report.mdx";
+    const fullPath = path.join(process.cwd() /* turbopackIgnore: true */, filePath);
     const content = fs.readFileSync(fullPath, "utf-8");
     const words = content.trim().split(/\s+/).length;
     return Math.ceil(words / 220); // Average reading speed for academic texts
@@ -24,7 +25,7 @@ function getReadingTime(filePath: string): number {
 
 export default function Home() {
   const toc = getTableOfContents("content/report.mdx");
-  const readingTime = getReadingTime("content/report.mdx");
+  const readingTime = getReadingTime();
   const mdxComponents = useMDXComponents({});
 
   return (
